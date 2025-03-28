@@ -1,0 +1,35 @@
+{
+  /* Editor */
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
+  "editor.tabSize": 2,
+  "editor.useTabStops": false,
+  "editor.insertSpaces": true,
+
+  /* Python */
+  "python.analysis.inlayHints.callArgumentNames": "all",
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.analysis.inlayHints.pytestParameters": true,
+  "python.analysis.typeCheckingMode": "strict",
+
+  /* Pylint */
+  "pylint.enabled": true,
+  "pylint.importStrategy": "useBundled",
+  "pylint.args": ["--disable-C0116"],
+  "pylint.severity": {
+    "convention": "Information",
+    "error": "Error",
+    "fatal": "Error",
+    "refactor": "Hint",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "pylint.ignorePatterns": [
+    "**/site-packages/**/*.py",
+    ".vscode/*.py",
+    "artisan.py"
+  ]
+}

@@ -1,0 +1,7 @@
+database/database.sqlite
+.black.toml
+.gitignore
+.git
+.isort.cfg
+LICENSE
+pyproject.toml
