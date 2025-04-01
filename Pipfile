@@ -9,7 +9,6 @@ fmt = "python -m black . --color --preview --fast --config .black.toml"
 
 [packages]
 flask = "*"
-flask-cors = "*"
 flask-socketio = "~=5.5.1"
 pylint = "*"
 

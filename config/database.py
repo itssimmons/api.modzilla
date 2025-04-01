@@ -103,7 +103,9 @@ class Builder:
         cur = None
 
         if self.__debug:
-            print(f"\n---\n{sql}\n---\n")
+            print("\n--- [BEGIN | DEBUG SQL] ---")
+            print(sql)
+            print("--- [END | DEBUG SQL] ---\n")
 
         if params is not None:
             cur = con.execute(sql, params)

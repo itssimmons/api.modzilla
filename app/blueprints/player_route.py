@@ -101,7 +101,7 @@ def update_player_status(user_id: int):
     data: Dict[str, Any] = request.get_json()
     status: str = data["status"]
 
-    if status not in ["online", "offline", "writing"]:
+    if status not in ["online", "offline", "typing", "idle"]:
         return jsonify({"success": False, "message": f"Invalid status: {status}"}), 400
 
     (

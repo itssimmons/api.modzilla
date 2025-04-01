@@ -5,9 +5,11 @@ def db_migrate():
 
     from database.migrations.migr_1739411674942 import up as up_1
     from database.migrations.migr_1739411696796 import up as up_2
+    from database.migrations.migr_1743284094292 import up as up_3
 
     up_1()
     up_2()
+    up_3()
 
 
 def db_seed():

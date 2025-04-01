@@ -8,13 +8,16 @@ app.config["SECRET_KEY"] = "Shh!"
 CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(
     app,
+    ping_interval=10,
+    ping_timeout=20,  # heartbeat
+    logger=True,
+    engineio_logger=True,
     cors_allowed_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://192.168.0.27:3000",
+        "http://192.168.0.218:8000",
     ],
-    logger=True,
-    engineio_logger=True,
 )
 
 from app.events import *
