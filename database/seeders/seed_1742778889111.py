@@ -3,14 +3,14 @@ from config.database import Builder
 
 def up():
     Builder.raw_query(
-        sql="""INSERT INTO users
+        sql="""insert into users
 (username, avatar, color, status, role)
-VALUES
+values
     (
         'Assistant',
-        'https://avatar.iran.liara.run/public/16',
-        '#EB6134',
+        'https://ui-avatars.com/api/?background=CEA2FD&name=Assistant&length=1',
+        '#CEA2FD',
         'online',
-        'assistant'
+        'staff'
     )"""
     )

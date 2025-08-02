@@ -1,10 +1,20 @@
 from flask_socketio import emit  # type: ignore
 from flask import request
-from typing import Any
+from typing import Any, Set
 from app import socketio
 
-# Handling errors
+online_sid: Set[str] = set()
 
+# Handling heartbeats
+@socketio.on('connect')
+def handle_connect():
+    online_sid.add(request.sid) # type: ignore
+
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    online_sid.discard(request.sid) # type: ignore
+    
 
 @socketio.on_error("/channel")
 def error_handler_channel(e: Any):

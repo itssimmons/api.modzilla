@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+
+from typing import Callable, Any
+
+def db_migrate():
+    """
+    Looping over all migrations and run the up command individually
+    """
+    
+    from pathlib import Path
+    from config.database import DATABASE_PATH
+
+    db_path = Path(DATABASE_PATH)
+    migrations_dir = db_path.parent / "migrations"
+    
+    pathlist = migrations_dir.glob("*.py")
+    
+    for file in pathlist:
+        from time import time
+        start = time()
+
+        print(f"Running migration: {file.name} ⏳")
+
+        raw_code = file.read_text()
+        namespace: dict[str, Any] = dict()
+        exec(raw_code, namespace)
+        namespace["up"]()
+
+        end = time()
+        print(f"Migration {file.name} ran successfully in {((end - start) * 1000):.2f}ms ✨\n")
+
+
+def db_seed():
+    """
+    Looping over all seeders and run the up command individually
+    """
+
+    from pathlib import Path
+    from config.database import DATABASE_PATH
+
+    db_path = Path(DATABASE_PATH)
+    migrations_dir = db_path.parent / "seeders"
+    
+    pathlist = migrations_dir.glob("*.py")
+    
+    for file in pathlist:
+        from time import time
+        start = time()
+
+        print(f"Running seeder: {file.name} ⏳")
+
+        raw_code = file.read_text()
+        namespace: dict[str, Any] = dict()
+        exec(raw_code, namespace)
+        namespace["up"]()
+
+        end = time()
+        print(f"Seeder {file.name} ran successfully in {((end - start) * 1000):.2f}ms ✨\n")
+
+
+def db_rollback():
+    """
+    TODO: The entire function
+    """
+    
+    print("Rollback not implemented yet 😔")
+
+
+def db_wipe():
+    from pathlib import Path
+    from config.database import DATABASE_PATH
+
+    path = Path(DATABASE_PATH)
+
+    if path.exists():
+        Path(DATABASE_PATH).unlink()
+
+    Path(DATABASE_PATH).touch()
+    print("Database wiped successfully 🧹")
+
+
+def generate_file(dest_folder: str):
+    from pathlib import Path
+    from config.database import DATABASE_PATH
+    from time import time
+
+    ms = round(time() * 1000)
+    file_name = ""
+
+    if dest_folder == "migrations":
+        file_name = f"migr_{ms}.py"
+    elif dest_folder == "seeders":
+        file_name = f"seed_{ms}.py"
+
+    db_path = Path(DATABASE_PATH)
+    migrations_dir = db_path.parent / dest_folder
+    migrations_dir.mkdir(parents=True, exist_ok=True)
+
+    path = migrations_dir / file_name
+
+    with path.open("w") as f:
+        f.write(
+            """from config.database import Builder
+
+
+def up():
+    Builder.raw_query(
+        sql=\"\"\"YOUR QUERY HERE...\"\"\"
+)"""
+        )
+
+    print(f"{dest_folder[:-1].capitalize()} created at: {dest_folder}/{file_name} 🎨")
+
+
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument(
+    "command",
+    choices=["db:migrate", "db:seed", "db:wipe", "db:rollback", "mk:migration", "mk:seeder"],
+)
+args = parser.parse_args()
+
+spells: dict[str, Callable[..., None]] = {
+    "db:migrate": db_migrate,
+    "db:seed": db_seed,
+    "db:wipe": db_wipe,
+    "db:rollback": db_rollback,
+    "mk:migration": lambda _: generate_file("migrations"),
+    "mk:seeder": lambda _: generate_file("seeders"),
+}
+
+if args.command not in spells:
+    print("Invalid command")
+else:
+    if args.command != "mk:migration" and args.command != "mk:seeder":
+        spells[args.command]()
+    else:
+        spells[args.command](args)
+
+

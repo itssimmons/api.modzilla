@@ -31,5 +31,6 @@
     "**/site-packages/**/*.py",
     ".vscode/*.py",
     "artisan.py"
-  ]
+  ],
+  "python.analysis.autoImportCompletions": true
 }
