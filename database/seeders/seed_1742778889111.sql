@@ -1,10 +1,5 @@
-from config.database import Builder
-
-
-def up():
-    Builder.raw_query(
-        sql="""insert into users
-(username, avatar, color, status, role)
+insert into users
+    (username, avatar, color, status, role)
 values
     (
         'Assistant',
@@ -12,5 +7,4 @@ values
         '#CEA2FD',
         'online',
         'staff'
-    )"""
     )

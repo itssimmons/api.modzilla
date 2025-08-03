@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Callable, Any
+from typing import Callable
 
 def db_migrate():
     """
@@ -17,14 +17,13 @@ def db_migrate():
     
     for file in pathlist:
         from time import time
+        from config.database import Builder
         start = time()
 
         print(f"Running migration: {file.name} ⏳")
 
-        raw_code = file.read_text()
-        namespace: dict[str, Any] = dict()
-        exec(raw_code, namespace)
-        namespace["up"]()
+        raw_sql = file.read_text()
+        Builder.raw_query(sql=raw_sql)
 
         end = time()
         print(f"Migration {file.name} ran successfully in {((end - start) * 1000):.2f}ms ✨\n")
@@ -45,14 +44,13 @@ def db_seed():
     
     for file in pathlist:
         from time import time
+        from config.database import Builder
         start = time()
 
         print(f"Running seeder: {file.name} ⏳")
 
-        raw_code = file.read_text()
-        namespace: dict[str, Any] = dict()
-        exec(raw_code, namespace)
-        namespace["up"]()
+        raw_sql = file.read_text()
+        Builder.raw_query(sql=raw_sql)
 
         end = time()
         print(f"Seeder {file.name} ran successfully in {((end - start) * 1000):.2f}ms ✨\n")
