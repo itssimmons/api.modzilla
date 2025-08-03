@@ -11,6 +11,7 @@ def read_room(room_id: str):
         .fields("*")
         .where(f"id = '{room_id}'")
         .read()
+        .limit(1)
         .fetchone())
 
     response = jsonify(rooms)

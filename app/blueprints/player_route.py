@@ -40,7 +40,12 @@ def register_player(username: str):
     )
 
     created_user = (
-        Builder.query("users").fields("*").where(f"id = {lastrowid}").read().fetchone()
+        Builder.query("users")
+        .fields("*")
+        .where(f"id = {lastrowid}")
+        .limit(1)
+        .read()
+        .fetchone()
     )
 
     welcome_message: Dict[str, Any] = {
@@ -67,12 +72,6 @@ def register_player(username: str):
 
 @players_bp.route("/", methods=["GET"])
 def read_players():
-    """
-    Example:
-        .. code-block:: bash
-        curl -X GET "http://127.0.0.1:8000/{version}/players"
-    """
-
     users = Builder.query("users").fields("*").read().fetchall()
     response = jsonify(users)
     response.headers["Cache-Control"] = "no-store"
