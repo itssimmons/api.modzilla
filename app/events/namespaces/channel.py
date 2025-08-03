@@ -7,7 +7,7 @@ from app import socketio
 from app.enums.Status import Status
 from config.database import Builder
 
-ASSISTANT_ID = 1
+STAFF_ID = 1
 
 
 @socketio.on("disconnect", namespace="/channel")

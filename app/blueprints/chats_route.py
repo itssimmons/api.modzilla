@@ -6,32 +6,32 @@ from config.database import Builder
 chats_bp = Blueprint("chats", __name__, url_prefix="/chats")
 
 
-@chats_bp.route("/channel", methods=["GET"])
-def read_chats():
-    """
-    Example:
-        .. code-block:: bash
-        curl -X GET "http://127.0.0.1:8000/{version}/channel"
-    """
-
-    chats = Builder.query("chats").fields("*").read().fetchall()
+@chats_bp.route("/channel/<string:room_id>/", methods=["GET"])
+def read_chats(room_id: str):
+    chats = (Builder.query("chats")
+        .fields("*")
+        .where(f"room_id = '{room_id}'")
+        .read()
+        .fetchall()
+)
     response = jsonify(chats)
     response.headers["Cache-Control"] = "no-store"
     return response, 200
 
 
-@chats_bp.route("/channel", methods=["POST"])
+@chats_bp.route("/channel/", methods=["POST"])
 def send_message():
     data = request.get_json()
 
     txt: str = data["message"]
-    user_id: int = data["user_id"]
+    sender_id: int = data["sender_id"]
+    room_id: str = data["room_id"]
     uuid = str(uuid4())
 
     (
         Builder.query("chats")
-        .fields(["id", "message", "sender_id"])
-        .values((uuid, txt, user_id))
+        .fields(["id", "message", "sender_id", "room_id"])
+        .values((uuid, txt, sender_id, room_id))
         .create()
     )
 

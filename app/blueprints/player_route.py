@@ -8,20 +8,11 @@ from typing import Dict, Any
 
 players_bp = Blueprint("players", __name__, url_prefix="/players")
 
-ASSISTANT_ID = 1
+STAFF_ID = 1
 
 
 @players_bp.route("/register/<username>", methods=["GET"])
 def register_player(username: str):
-    """
-    Example:
-        .. code-block:: bash
-        curl -X GET "http://127.0.0.1:8000/{version}/players/register/{username}" \\
-        -d room=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX \\
-        -d avatar=http://... \\
-        -d color=#92F700
-    """
-
     query_params: Dict[str, Any] = {
         "avatar": request.args.get("avatar"),
         "color": request.args.get("color"),
@@ -54,7 +45,7 @@ def register_player(username: str):
 
     welcome_message: Dict[str, Any] = {
         "id": str(uuid4()),
-        "sender_id": ASSISTANT_ID,
+        "sender_id": STAFF_ID,
         "modified_id": None,
         "message": f"Ey! say everybody welcome to @{username} 👋",
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -95,7 +86,7 @@ def update_player_status(user_id: int):
         .. code-block:: bash
         curl -X PATCH "http://127.0.0.1:8000/{version}/players/{user_id}" \\
         -H "Content-Type: application/json" \\
-        -d status={online|offline|writing}
+        -d status={online|offline|typing|idle}
     """
 
     data: Dict[str, Any] = request.get_json()

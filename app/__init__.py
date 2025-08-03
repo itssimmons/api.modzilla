@@ -13,7 +13,10 @@ socketio = SocketIO(
     logger=True,
     engineio_logger=True,
     cors_allowed_origins=[
-       "*"
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://192.168.0.27:3000",
+        "http://192.168.0.218:8000",
     ],
 )
 
