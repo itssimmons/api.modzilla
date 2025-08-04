@@ -1,0 +1,253 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Modzilla Private API - OpenAPI 3.0",
+    "description": "This is a private API for the Modzilla project. It is not intended for public use yet.\n\nThis API is still in development and may change at any time.\n\nIf you have any questions or concerns, please contact us at simonvillafanee@gmail.com",
+    "termsOfService": "https://swagger.io/terms/",
+    "contact": {
+      "email": "simonvillafanee@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/itssimmons/api.modzilla/blob/main/LICENSE"
+    },
+    "version": "0.1.0-alpha"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "https://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000/v1"
+    },
+    {
+      "url": "http://127.0.0.1:5000/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Rooms",
+      "description": "Organize your chats using rooms"
+    },
+    {
+      "name": "Chats",
+      "description": "Chat with your friends"
+    },
+    {
+      "name": "Users",
+      "description": "Manage your account"
+    }
+  ],
+  "paths": {
+    "/channels/{room_id}/": {
+      "get": {
+        "tags": ["Rooms"],
+        "summary": "Get one room",
+        "description": "Get one room",
+        "operationId": "read_room",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+
+    "/chats/channel/{room_id}/": {
+      "get": {
+        "tags": ["Chats"],
+        "summary": "Read all chats",
+        "description": "Read all chats",
+        "operationId": "read_chats",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Chat"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "The unique identifier for the user"
+          },
+          "username": {
+            "type": "string",
+            "description": "The username of the user"
+          },
+          "role": {
+            "type": "string",
+            "description": "The role of the user"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "The URL of the user's avatar"
+          },
+          "color": {
+            "type": "string",
+            "description": "The color of the user's avatar"
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the user"
+          }
+        }
+      },
+
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the room"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the room"
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the room"
+          },
+          "logo": {
+            "type": "string",
+            "description": "The URL of the room's logo"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time the room was created"
+          },
+          "modified_at": {
+            "type": "string",
+            "description": "The date and time the room was last modified"
+          }
+        }
+      },
+
+      "Chat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the chat"
+          },
+          "sender_id": {
+            "type": "number",
+            "description": "The unique identifier for the sender"
+          },
+          "message": {
+            "type": "string",
+            "description": "The message content"
+          },
+          "room_id": {
+            "type": "string",
+            "description": "The unique identifier for the room"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time the chat was created"
+          },
+          "modified_at": {
+            "type": "string",
+            "description": "The date and time the chat was last modified"
+          },
+          "modified_id": {
+            "type": "number",
+            "description": "The unique identifier for the user who last modified the chat"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reaction"
+            }
+          }
+        }
+      },
+      "Reaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier for the reaction"
+          },
+          "chat_id": {
+            "type": "string",
+            "description": "The unique identifier for the chat"
+          },
+          "sender_id": {
+            "type": "number",
+            "description": "The unique identifier for the sender"
+          },
+          "emoji": {
+            "type": "string",
+            "description": "The emoji used for the reaction"
+          },
+          "count": {
+            "type": "number",
+            "description": "The number of times the reaction was used"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "The date and time the reaction was created"
+          }
+        }
+      }
+    }
+  }
+}
