@@ -10,10 +10,11 @@ chats_bp = Blueprint("chats", __name__, url_prefix="/chats")
 def read_chats(room_id: str):
     chats = (Builder.query("chats")
         .fields("*")
-        .where(f"room_id = '{room_id}'")
+        .where(f"chats.room_id = '{room_id}'")
+        .relation("users", "sender_id")
         .read()
-        .fetchall()
-)
+        .fetchall())
+
     response = jsonify(chats)
     response.headers["Cache-Control"] = "no-store"
     return response, 200

@@ -63,7 +63,7 @@ def player_connected(data: Dict[str, Any]):
     (
         Builder.query("users")
         .fields(["sid"])
-        .values((sid,)) # type: ignore
+        .values((sid,))  # type: ignore
         .where(f"id = {user_id}")
         .update()
     )
