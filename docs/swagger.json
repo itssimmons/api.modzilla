@@ -44,7 +44,7 @@
       "get": {
         "tags": ["Rooms"],
         "summary": "Get one room",
-        "description": "Get one room",
+        "description": "Get one room, (Note: Getting one room is cached for an hour)",
         "operationId": "read_room",
         "parameters": [
           {
@@ -104,6 +104,219 @@
                   "items": {
                     "$ref": "#/components/schemas/Chat"
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Chats"],
+        "summary": "Send a message",
+        "description": "Send a message",
+        "operationId": "send_message",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The message content",
+                    "example": "Hello? is someone there? 🔍"
+                  },
+                  "sender_id": {
+                    "type": "number",
+                    "description": "The unique identifier for the sender",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiOk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/players/": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Read all users",
+        "description": "Read all users",
+        "operationId": "read_users",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/players/register/{username}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Register a new user",
+        "description": "Register a new user",
+        "operationId": "register_player",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Username",
+              "type": "string"
+            },
+            "name": "username",
+            "in": "path",
+            "example": "simon"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Avatar",
+              "type": "string"
+            },
+            "name": "avatar",
+            "in": "query",
+            "example": "https://ui-avatars.com/api/?background=005f5f&name=Simon&length=1"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Color",
+              "type": "string"
+            },
+            "name": "color",
+            "in": "query",
+            "example": "#005f5f"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Room",
+              "type": "string"
+            },
+            "name": "room",
+            "in": "query",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Status",
+              "type": "string",
+              "enum": ["online", "offline", "typing", "idle"]
+            },
+            "name": "status",
+            "in": "query",
+            "example": "online"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/players/{user_id}/": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update a user",
+        "description": "Update a user",
+        "operationId": "update_player_status",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "User ID",
+              "type": "number"
+            },
+            "name": "user_id",
+            "in": "path",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "The status of the user",
+                    "example": "online",
+                    "enum": ["online", "offline", "typing", "idle"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiOk"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiBadRequest"
                 }
               }
             }
@@ -245,6 +458,37 @@
           "created_at": {
             "type": "string",
             "description": "The date and time the reaction was created"
+          }
+        }
+      },
+
+      "ApiOk": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "A message describing the result of the request",
+            "example": "This pretends to be a OK message"
+          }
+        }
+      },
+      "ApiBadRequest": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "A message describing the result of the request",
+            "example": "This pretends to be a BAD REQUEST message"
           }
         }
       }

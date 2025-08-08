@@ -78,16 +78,8 @@ def read_players():
     return response, 200
 
 
-@players_bp.route("/<int:user_id>", methods=["PATCH"])
+@players_bp.route("/<int:user_id>/", methods=["PATCH"])
 def update_player_status(user_id: int):
-    """
-    Example:
-        .. code-block:: bash
-        curl -X PATCH "http://127.0.0.1:8000/{version}/players/{user_id}" \\
-        -H "Content-Type: application/json" \\
-        -d status={online|offline|typing|idle}
-    """
-
     data: Dict[str, Any] = request.get_json()
     status: str = data["status"]
 

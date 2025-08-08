@@ -20,13 +20,12 @@ def read_chats(room_id: str):
     return response, 200
 
 
-@chats_bp.route("/channel/", methods=["POST"])
-def send_message():
+@chats_bp.route("/channel/<string:room_id>/", methods=["POST"])
+def send_message(room_id: str):
     data = request.get_json()
 
     txt: str = data["message"]
     sender_id: int = data["sender_id"]
-    room_id: str = data["room_id"]
     uuid = str(uuid4())
 
     (
@@ -36,5 +35,5 @@ def send_message():
         .create()
     )
 
-    response = jsonify({"success": True, "message": f"Message saved successfully"})
+    response = jsonify({"success": True, "message": f"Message sent successfully"})
     return response, 201
