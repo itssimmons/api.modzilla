@@ -1,7 +1,7 @@
 from flask.json import jsonify
 from flask import Blueprint, request
 from uuid import uuid4
-from config.database import Builder
+from config.database import Builder, Relationship
 
 chats_bp = Blueprint("chats", __name__, url_prefix="/chats")
 
@@ -12,6 +12,7 @@ def read_chats(room_id: str):
         .fields("*")
         .where(f"chats.room_id = '{room_id}'")
         .relation("users", "sender_id")
+        .relation("chat_reactions", "chat_id", relationship=Relationship.HAS_MANY, alias="reactions")
         .read()
         .fetchall())
 

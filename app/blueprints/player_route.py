@@ -51,7 +51,7 @@ def register_player(username: str):
     welcome_message: Dict[str, Any] = {
         "id": str(uuid4()),
         "sender_id": STAFF_ID,
-        "modified_id": None,
+        "room_id": query_params["room"],
         "message": f"Ey! say everybody welcome to @{username} 👋",
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "modified_at": None,
@@ -87,7 +87,7 @@ def update_player_status(user_id: int):
         return jsonify({"success": False, "message": f"Invalid status: {status}"}), 400
 
     (
-        Builder.query("users", False)
+        Builder.query("users")
         .fields(["status"])
         .values((status,))
         .where(f"id = {user_id}")
