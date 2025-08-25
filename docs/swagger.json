@@ -165,6 +165,69 @@
         }
       }
     },
+    "/chats/channel/{room_id}/{chat_id}/react": {
+      "post": {
+        "tags": ["Chats"],
+        "summary": "React to a message",
+        "description": "React to a message",
+        "operationId": "react_to_message",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Chat ID",
+              "type": "string"
+            },
+            "name": "chat_id",
+            "in": "path",
+            "example": "35f6e2c9-8d20-4316-b9fc-77f8338343e6"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sender_id": {
+                    "type": "number",
+                    "description": "The unique identifier for the sender",
+                    "example": 1
+                  },
+                  "emoji": {
+                    "type": "string",
+                    "description": "The emoji to react with",
+                    "example": "👍"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiOk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "/players/": {
       "get": {
