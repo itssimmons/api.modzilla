@@ -1,2 +1,39 @@
+[project]
+name = "Modzilla_apis"
+version = "0.1.0"
+description = "A chat API for Modzilla"
+authors = [
+  { name = "Your Name", email = "you@example.com" }
+]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+  "flask==3.1.1",
+  "flask-socketio~=5.5.1",
+  "flask-cors==3.0.10",
+  "flask-swagger-ui==3.36.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "isort",
+  "pylint",
+  "setuptools",
+  "invoke"
+]
+
+[tool.setuptools]
+py-modules = []
+
 [tool.isort]
 profile = "black"
+
+[tool.pylint."MESSAGE CONTROL"]
+disable = [
+  "C0116",  # Missing function or method docstring
+  "C0115",  # Missing class docstring
+  "C0114",  # Missing module docstring
+]

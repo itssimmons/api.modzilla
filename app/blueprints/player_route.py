@@ -3,7 +3,7 @@ from flask.json import jsonify
 from flask import Blueprint, request
 from uuid import uuid4
 from datetime import datetime
-from config.database import Builder
+from orm.database import Builder
 from typing import Dict, Any
 
 players_bp = Blueprint("players", __name__, url_prefix="/players")

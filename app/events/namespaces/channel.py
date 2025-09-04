@@ -5,7 +5,7 @@ from uuid import uuid4
 from typing import Dict, Any
 from app import socketio
 from app.enums.Status import Status
-from config.database import Builder
+from orm.database import Builder
 
 STAFF_ID = 1
 
@@ -13,7 +13,7 @@ STAFF_ID = 1
 @socketio.on("disconnect", namespace="/channel")
 def handle_disconnect_channel(_: None):
     """TODO: make it global, not only for /channel"""
-    sid: str = request.sid # type: ignore
+    sid: str = request.sid  # type: ignore
     op = "old"
 
     user = (
@@ -47,7 +47,7 @@ def player_connected(data: Dict[str, Any]):
     """TODO: make it global, not only for /channel"""
     print("\n---\nevent: online\n---\n [", data, "]")
 
-    sid: str = request.sid # type: ignore
+    sid: str = request.sid  # type: ignore
     user: Dict[str, Any] = data["user"]
     op = data["op"] if "op" in data else "old"
 

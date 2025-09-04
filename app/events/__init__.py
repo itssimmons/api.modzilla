@@ -5,16 +5,17 @@ from app import socketio
 
 online_sid: Set[str] = set()
 
+
 # Handling heartbeats
-@socketio.on('connect')
+@socketio.on("connect")
 def handle_connect():
-    online_sid.add(request.sid) # type: ignore
+    online_sid.add(request.sid)  # type: ignore
 
 
-@socketio.on('disconnect')
+@socketio.on("disconnect")
 def handle_disconnect():
-    online_sid.discard(request.sid) # type: ignore
-    
+    online_sid.discard(request.sid)  # type: ignore
+
 
 @socketio.on_error("/channel")
 def error_handler_channel(e: Any):

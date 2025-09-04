@@ -1,7 +1,20 @@
-database/database.sqlite
-.black.toml
+# Database
+database/db.sqlite3
+
+# Git
+.git/
 .gitignore
-.git
-.isort.cfg
-LICENSE
-pyproject.toml
+
+# Python
+cli.py
+tasks.py
+__pycache__/
+*.pyc
+
+# Environment
+.env.example
+
+# Docs
+LICENSE.txt
+README.md
+docs/

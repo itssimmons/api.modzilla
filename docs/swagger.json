@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "Modzilla Private API - OpenAPI 3.0",
     "description": "This is a private API for the Modzilla project. It is not intended for public use yet.\n\nThis API is still in development and may change at any time.\n\nIf you have any questions or concerns, please contact us at simonvillafanee@gmail.com",

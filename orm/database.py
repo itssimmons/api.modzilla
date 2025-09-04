@@ -1,7 +1,6 @@
 from os import getcwd
 from enum import Enum
 from typing import List, Self, Tuple, Any, Dict, Literal, TypedDict, overload, Callable
-from warnings import deprecated
 
 import sqlite3
 
@@ -9,13 +8,18 @@ import sqlite3
 DATABASE_PATH = f"{getcwd()}/database/db.sqlite3"
 SQL_TEMPLATE = ["", "", "", "", "", ""]
 
+
 class Relationship(Enum):
     HAS_ONE = "has_one"
     HAS_MANY = "has_many"
     BELONGS_TO_ONE = "belongs_to_one"
     BELONGS_TO_MANY = "belongs_to_many"
-    
-IRelationship = TypedDict("IRelationship", { "t": str, "type": Relationship, "alias": str | None })
+
+
+IRelationship = TypedDict(
+    "IRelationship", {"t": str, "type": Relationship, "alias": str | None}
+)
+
 
 class Builder:
     __t1: str = ""
@@ -55,7 +59,7 @@ class Builder:
 
     @staticmethod
     @overload
-    def parse_fields( # type: ignore
+    def parse_fields(  # type: ignore
         fields: Literal["*"] | List[str],
         table: str,
         cast: Literal["str"] = "str",
@@ -66,7 +70,7 @@ class Builder:
     ) -> str: ...
     @staticmethod
     @overload
-    def parse_fields( # type: ignore
+    def parse_fields(  # type: ignore
         fields: Literal["*"] | List[str],
         table: str,
         cast: Literal["list"] = "list",
@@ -79,7 +83,7 @@ class Builder:
     def parse_fields(
         fields: Literal["*"] | List[str],
         table: str,
-        cast: Literal["list", "str"] = "str", # type: ignore
+        cast: Literal["list", "str"] = "str",  # type: ignore
         prefix: bool = False,
         sep: str | None = None,
         dml: Literal["INSERT", "SELECT", "UPDATE", "DELETE"] = "INSERT",
@@ -88,23 +92,24 @@ class Builder:
         mutable_fields: List[str] | Literal["*"] = fields
         t = alias if alias is not None else table
 
-        sep_fn: Callable[[str], str] = lambda x: f"{table}.{x}" if dml == 'SELECT' else x
+        sep_fn: Callable[[str], str] = lambda x: (
+            f"{table}.{x}" if dml == "SELECT" else x
+        )
 
         if fields == "*":
             mutable_fields = Builder.resolve_asterisk(table)
-        
+
         if cast == "list":
             if prefix is not False:
                 return [f"{sep_fn(f)} AS '{t}{sep}{f}'" for f in mutable_fields]
             return [f"{sep_fn(f)}" for f in mutable_fields]
-        
+
         if prefix is not False:
             return ", ".join([f"{sep_fn(f)} AS '{t}{sep}{f}'" for f in mutable_fields])
 
         return ", ".join([f"{sep_fn(f)}" for f in mutable_fields])
 
     @staticmethod
-    @deprecated("Use Builder.parse_fields instead")
     def parse_values(values: Tuple[Any, ...]) -> str:
         v = [f"'{v}'" for v in values]
         return ", ".join(v)
@@ -113,15 +118,15 @@ class Builder:
     def parse_sets(fields: List[str], values: Tuple[Any, ...]) -> str:
         fields = [f"{fields[i]} = ?" for i in range(len(fields))]
         return ", ".join(fields)
-    
+
     @staticmethod
     def remove_duplicates(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         unique_data: List[Dict[str, Any]] = []
 
         for row in data:
             unique_ids: List[str] = [x["id"] for x in unique_data]
-            keys_type_list =  [x for x in row if type(row[x]) is list]
-            
+            keys_type_list = [x for x in row if type(row[x]) is list]
+
             if row["id"] not in unique_ids:
                 for key in keys_type_list:
                     if row[key][0]["id"] is None:
@@ -132,29 +137,28 @@ class Builder:
                     x = unique_ids.index(row["id"])
                     if row[key][0]["id"] != unique_data[x][key][0]["id"]:
                         unique_data[x][key].append(row[key][0])
-                        
+
         return unique_data
-        
 
     @staticmethod
     def parse_rows(fields: List[str], rows: List[Any]) -> List[Dict[str, Any]]:
         result: List[Dict[str, Any]] = []
 
         for row in rows:
-            json: Dict[str , Any] = dict()
+            json: Dict[str, Any] = dict()
             for i in range(len(row)):
-                if ':' in fields[i]:
-                    x = fields[i].split(':')
+                if ":" in fields[i]:
+                    x = fields[i].split(":")
                     if x[0] not in json or type(json[x[0]]) is not dict:
                         json[x[0]] = {}
                     json[x[0]][x[1]] = row[i]
-                elif '@' in fields[i]:
-                    x = fields[i].split('@')
+                elif "@" in fields[i]:
+                    x = fields[i].split("@")
                     if x[0] not in json or type(json[x[0]]) is not list:
                         json[x[0]] = [{}]
                     json[x[0]][0][x[1]] = row[i]
-                elif '.' in fields[i]:
-                    x = fields[i].split('.')
+                elif "." in fields[i]:
+                    x = fields[i].split(".")
                     json[x[1]] = row[i]
                 else:
                     json[fields[i]] = row[i]
@@ -165,23 +169,23 @@ class Builder:
     @staticmethod
     def parse_row(fields: List[str], row: Any) -> Dict[str, Any]:
         result: Dict[str, Any] = {}
-        
+
         print(row)
         print(fields)
 
         for i in range(len(fields)):
-            if ':' in fields[i]:
-                x = fields[i].split(':')
+            if ":" in fields[i]:
+                x = fields[i].split(":")
                 if x[0] not in result or type(result[x[0]]) is not dict:
                     result[x[0]] = {}
                 result[x[0]][x[1]] = row[i]
-            elif '@' in fields[i]:
-                x = fields[i].split('@')
+            elif "@" in fields[i]:
+                x = fields[i].split("@")
                 if x[0] not in result or type(result[x[0]]) is not list:
                     result[x[0]] = [{}]
                 result[x[0]][0][x[1]] = row[i]
-            elif '.' in fields[i]:
-                x = fields[i].split('.')
+            elif "." in fields[i]:
+                x = fields[i].split(".")
                 result[x[1]] = row[i]
             else:
                 result[fields[i]] = row[i]
@@ -295,26 +299,34 @@ class Builder:
     def read(self):
         """Read all rows from the table"""
         self.__dml = "SELECT"
-        
-        f = [Builder.parse_fields(self.__f, self.__t1, sep='.', dml=self.__dml)]
+
+        f = [Builder.parse_fields(self.__f, self.__t1, sep=".", dml=self.__dml)]
 
         if len(self.__rel) > 0:
             for row in self.__rel:
                 t2: str = row["t"]
                 type: Relationship = row["type"]
                 alias: str | None = row["alias"]
-                
+
                 if type == Relationship.HAS_ONE:
-                    f.append(Builder.parse_fields('*', t2, prefix=True, sep=':', dml=self.__dml, alias=alias))
+                    f.append(
+                        Builder.parse_fields(
+                            "*", t2, prefix=True, sep=":", dml=self.__dml, alias=alias
+                        )
+                    )
                 elif type == Relationship.HAS_MANY:
-                    f.append(Builder.parse_fields('*', t2, prefix=True, sep='@', dml=self.__dml, alias=alias))
+                    f.append(
+                        Builder.parse_fields(
+                            "*", t2, prefix=True, sep="@", dml=self.__dml, alias=alias
+                        )
+                    )
                 # elif type == Relationship.BELONGS_TO_ONE:
                 #     f.append(Builder.parse_fields('*', t2, prefix=True, dml=self.__dml))
                 # elif type == Relationship.BELONGS_TO_MANY:
                 #     f.append(Builder.parse_fields('*', t2, prefix=True, dml=self.__dml))
 
-            f = ', '.join(f).split(', ')
-            self.__f = [x.split(' AS ')[1][1:-1] if ' AS ' in x else x for x in f]
+            f = ", ".join(f).split(", ")
+            self.__f = [x.split(" AS ")[1][1:-1] if " AS " in x else x for x in f]
 
         self.__sql[0] = f"SELECT {', '.join(f)} FROM {self.__t1}"
         return self.__run()
@@ -339,7 +351,7 @@ class Builder:
         self.__sql[0] = f"DELETE FROM {self.__t1}"
         self.__run()
         self.close()
-    
+
     @overload
     def relation(
         self,
@@ -349,7 +361,9 @@ class Builder:
         *,
         pivot: str | None = None,
         fk_2: str | None = None,
-        relationship: Literal[Relationship.BELONGS_TO_MANY] = Relationship.BELONGS_TO_MANY,
+        relationship: Literal[
+            Relationship.BELONGS_TO_MANY
+        ] = Relationship.BELONGS_TO_MANY,
     ) -> Self: ...
     @overload
     def relation(
@@ -358,7 +372,9 @@ class Builder:
         fk: str | None = None,
         alias: str | None = None,
         *,
-        relationship: Literal[Relationship.HAS_ONE, Relationship.BELONGS_TO_ONE, Relationship.HAS_MANY] = Relationship.HAS_ONE,
+        relationship: Literal[
+            Relationship.HAS_ONE, Relationship.BELONGS_TO_ONE, Relationship.HAS_MANY
+        ] = Relationship.HAS_ONE,
     ) -> Self: ...
     def relation(
         self,
@@ -374,11 +390,11 @@ class Builder:
         if fk_2 is None:
             fk_2 = f"{self.__t1[:-1]}_id"
 
-        self.__rel.append({ "t": t2, "type": relationship, "alias": alias })
-        
+        self.__rel.append({"t": t2, "type": relationship, "alias": alias})
+
         if len(self.__sql[1]) > 0:
             self.__sql[1] += f"\n"
-    
+
         if relationship == Relationship.HAS_ONE:
             self.__sql[1] += f"INNER JOIN {t2} ON {self.__t1}.{fk} = {t2}.id"
         elif relationship == Relationship.HAS_MANY:
@@ -386,7 +402,9 @@ class Builder:
         elif relationship == Relationship.BELONGS_TO_ONE:
             self.__sql[1] += f"INNER JOIN {t2} ON {self.__t1}.{fk} = {t2}.id"
         elif relationship == Relationship.BELONGS_TO_MANY:
-            self.__sql[1] += f"""INNER JOIN {pivot} ON {self.__t1}.id = {pivot}.{fk_2}
+            self.__sql[
+                1
+            ] += f"""INNER JOIN {pivot} ON {self.__t1}.id = {pivot}.{fk_2}
 INNER JOIN {t2} ON {pivot}.id = {t2}.{fk}"""
 
         return self
