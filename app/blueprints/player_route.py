@@ -1,10 +1,11 @@
-from flask_socketio import emit  # type: ignore
 from flask.json import jsonify
 from flask import Blueprint, request
-from uuid import uuid4
-from datetime import datetime
-from orm.database import Builder
+
+# from uuid import uuid4
+# from datetime import datetime
 from typing import Dict, Any
+
+from orm.database import Builder
 
 players_bp = Blueprint("players", __name__, url_prefix="/players")
 
@@ -48,23 +49,23 @@ def register_player(username: str):
         .fetchone()
     )
 
-    welcome_message: Dict[str, Any] = {
-        "id": str(uuid4()),
-        "sender_id": STAFF_ID,
-        "room_id": query_params["room"],
-        "message": f"Ey! say everybody welcome to @{username} 👋",
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "modified_at": None,
-    }
+    # welcome_message: Dict[str, Any] = {
+    #     "id": str(uuid4()),
+    #     "sender_id": STAFF_ID,
+    #     "room_id": query_params["room"],
+    #     "message": f"Ey! say everybody welcome to @{username} 👋",
+    #     "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    #     "modified_at": None,
+    # }
 
-    (
-        Builder.query("chats")
-        .fields("*")
-        .values(tuple(welcome_message.values()))
-        .create()
-    )
+    # (
+    #     Builder.query("chats")
+    #     .fields("*")
+    #     .values(tuple(welcome_message.values()))
+    #     .create()
+    # )
 
-    emit("main:channel", welcome_message, to=query_params["room"], namespace="/channel")  # type: ignore
+    # emit("main:channel", welcome_message, to=query_params["room"], namespace="/channel")
 
     response = jsonify({"user": created_user, "is": "new"})
     return response, 201

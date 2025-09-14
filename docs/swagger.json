@@ -165,7 +165,7 @@
         }
       }
     },
-    "/chats/channel/{room_id}/{chat_id}/react": {
+    "/chats/channel/{room_id}/{chat_id}/react/": {
       "post": {
         "tags": ["Chats"],
         "summary": "React to a message",
@@ -217,6 +217,109 @@
         "responses": {
           "201": {
             "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiOk"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/channel/{room_id}/{chat_id}/delete/": {
+      "delete": {
+        "tags": ["Chats"],
+        "summary": "Delete a message",
+        "description": "Delete a message",
+        "operationId": "delete_message",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Chat ID",
+              "type": "string"
+            },
+            "name": "chat_id",
+            "in": "path",
+            "example": "35f6e2c9-8d20-4316-b9fc-77f8338343e6"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiOk"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/chats/channel/{room_id}/{chat_id}/edit/": {
+      "patch": {
+        "tags": ["Chats"],
+        "summary": "Edit a message",
+        "description": "Edit a message",
+        "operationId": "edit_message",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Room ID",
+              "type": "string"
+            },
+            "name": "room_id",
+            "in": "path",
+            "example": "53c38a2c-9640-4957-92d7-0d4400b2b9ac"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Chat ID",
+              "type": "string"
+            },
+            "name": "chat_id",
+            "in": "path",
+            "example": "35f6e2c9-8d20-4316-b9fc-77f8338343e6"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The message content",
+                    "example": "Hello? is someone there? 🔍"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
             "content": {
               "application/json": {
                 "schema": {

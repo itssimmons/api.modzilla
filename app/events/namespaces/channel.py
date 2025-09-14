@@ -1,14 +1,16 @@
 from flask_socketio import emit, join_room  # type: ignore
 from flask import request
+
 from datetime import datetime
-from uuid import uuid4
 from typing import Dict, Any
+from uuid import uuid4
+
 from app import socketio
 from app.enums.Status import Status
 from orm.database import Builder
 
-STAFF_ID = 1
 
+STAFF_ID = 1
 
 @socketio.on("disconnect", namespace="/channel")
 def handle_disconnect_channel(_: None):
@@ -124,6 +126,27 @@ def player_message(data: Dict[str, Any]):
     emit(
         "main:channel",
         message,
+        to=room,
+        broadcast=True,
+        include_self=False,
+        namespace="/channel",
+    )
+    
+@socketio.on("message:action", namespace="/channel")
+def player_action(data: Dict[str, Any]):
+    print("\n---\nevent: message:action\n---\n [", data, "]")
+    
+    print("AKAJAJAJAJJA")
+    
+    room: str = data["room"]
+    payload = data["payload"]
+    event = data["event"]
+    
+    print(payload, room ,event)
+
+    emit(
+        event,
+        payload,
         to=room,
         broadcast=True,
         include_self=False,
