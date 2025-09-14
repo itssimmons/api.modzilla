@@ -8,12 +8,12 @@ online_sid: Set[str] = set()
 
 # Handling heartbeats
 @socketio.on("connect")
-def handle_connect():
+def handle_channel_connect():
     online_sid.add(request.sid)  # type: ignore
 
 
 @socketio.on("disconnect")
-def handle_disconnect():
+def handle_channel_disconnect():
     online_sid.discard(request.sid)  # type: ignore
 
 

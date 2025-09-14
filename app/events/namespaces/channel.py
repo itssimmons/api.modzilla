@@ -1,4 +1,4 @@
-from flask_socketio import emit, join_room  # type: ignore
+from flask_socketio import emit, join_room, leave_room  # type: ignore
 from flask import request
 
 from datetime import datetime
@@ -12,67 +12,53 @@ from orm.database import Builder
 
 STAFF_ID = 1
 
-@socketio.on("disconnect", namespace="/channel")
-def handle_disconnect_channel(_: None):
-    """TODO: make it global, not only for /channel"""
+
+@socketio.on('connected', namespace='/channel')
+def handle_channel_connect(data: Dict[str, Any]):
     sid: str = request.sid  # type: ignore
-    op = "old"
+    user_id: int = data["user_id"]
 
-    user = (
-        Builder.query("users")
-        .fields("*")
-        .where(f"sid = '{sid}'")
-        .limit(1)
-        .read()
-        .fetchone()
-    )
-
-    activity: Dict[str, Any] = {
-        "user": {**user, "status": Status.OFFLINE.value},
-        "sid": None,
-        "is": op,
+    payload: Dict[str, Any] = {
+        "user": {
+            "id": user_id,
+            "sid": sid,
+            "status": Status.ONLINE.value
+        }
     }
 
-    emit("activity:channel", activity, broadcast=True, namespace="/channel")
-
-    (
-        Builder.query("users")
-        .fields(["sid", "status"])
-        .values((None, Status.OFFLINE.value))
-        .where(f"sid = '{sid}'")
-        .update()
+    emit(
+        "channel:status",
+        payload,
+        # to=room,
+        broadcast=True,
+        include_self=True,
+        namespace="/channel",
     )
-
-
-@socketio.on("connected", namespace="/channel")
-def player_connected(data: Dict[str, Any]):
-    """TODO: make it global, not only for /channel"""
-    print("\n---\nevent: online\n---\n [", data, "]")
-
-    sid: str = request.sid  # type: ignore
-    user: Dict[str, Any] = data["user"]
-    op = data["op"] if "op" in data else "old"
-
-    user_id: int = user["id"]
-
-    activity: Dict[str, Any] = {
-        "user": {**user, "status": Status.ONLINE.value},
-        "is": op,
-    }
-
-    emit("activity:channel", activity, broadcast=True, namespace="/channel")
-
+    
     (
-        Builder.query("users")
-        .fields(["sid"])
-        .values((sid,))  # type: ignore
+        Builder.query('users')
+        .fields(['sid', 'status'])
+        .values((sid, Status.ONLINE.value,)) # type: ignore
         .where(f"id = {user_id}")
         .update()
     )
 
 
+@socketio.on("disconnect", namespace="/channel")
+def handle_channel_disconnect(_: None):
+    sid: str = request.sid  # type: ignore
+
+    (
+        Builder.query("users")
+        .fields(["sid", "status"])
+        .values((None, Status.OFFLINE.value,))
+        .where(f"sid = '{sid}'")
+        .update()
+    )
+    
+
 @socketio.on("cursor:move", namespace="/channel")
-def player_cursor_move(data: Dict[str, Any]):
+def channel_cursor_move(data: Dict[str, Any]):
     print("\n---\nevent: cursor:move\n---\n [", data, "]")
 
     room: str = data["room"]
@@ -88,25 +74,8 @@ def player_cursor_move(data: Dict[str, Any]):
     )
 
 
-@socketio.on("activity:channel", namespace="/channel")
-def activity_channel(data: Dict[str, Any]):
-    print("\n---\nevent: activity:channel\n---\n [", data, "]")
-
-    user = data["user"]
-    room = data["room"] if "room" in data else None
-    op = "old"
-
-    activity: Dict[str, Any] = {
-        "user": {**user},
-        "sid": None,
-        "is": op,
-    }
-
-    emit("activity:channel", activity, to=room, broadcast=True, namespace="/channel")
-
-
 @socketio.on("message", namespace="/channel")
-def player_message(data: Dict[str, Any]):
+def channel_message(data: Dict[str, Any]):
     print("\n---\nevent: message\n---\n [", data, "]")
 
     user_id: int = data["user_id"]
@@ -132,11 +101,10 @@ def player_message(data: Dict[str, Any]):
         namespace="/channel",
     )
     
-@socketio.on("message:action", namespace="/channel")
-def player_action(data: Dict[str, Any]):
-    print("\n---\nevent: message:action\n---\n [", data, "]")
     
-    print("AKAJAJAJAJJA")
+@socketio.on("message:action", namespace="/channel")
+def channel_message_action(data: Dict[str, Any]):
+    print("\n---\nevent: message:action\n---\n [", data, "]")
     
     room: str = data["room"]
     payload = data["payload"]
@@ -152,43 +120,65 @@ def player_action(data: Dict[str, Any]):
         include_self=False,
         namespace="/channel",
     )
+    
+    
+@socketio.on("player:action", namespace="/channel")
+def channel_player_action(data: Dict[str, Any]):
+    print("\n---\nevent: player:action\n---\n [", data, "]")
+    
+    room: str | None = data.get("room", None)
+    payload = data.get("payload", {})
+    event = data.get("event", None)
+    
+    if event == "channel:whisper":
+        dest_sid: str  = payload["to"]["sid"]
+        del payload["to"]["sid"]
+
+        emit(
+            event,
+            payload,
+            to=dest_sid,
+            broadcast=False,
+            include_self=False,
+            namespace="/channel",
+        )
+    elif event == "channel:status":
+        user = payload["user"]
+        
+        (
+            Builder.query('users')
+            .fields(['status'])
+            .values((user['status'],))
+            .where(f"id = {user['id']}")
+            .update()
+        )
+
+        emit(
+            event,
+            payload,
+            to=room,
+            broadcast=True,
+            include_self=True,
+            namespace="/channel",
+        )
+    elif event == "channel:block":
+        pass
+    else:
+        print("Unknown event:", event)
 
 
 @socketio.on("join", namespace="/channel")
 def player_join(data: Dict[str, Any]):
     print("\n---\nevent: join\n---\n [", data, "]")
 
-    room: str = data["room"]
-    join_room(room)
+    room_id: str = data["room"]
+    join_room(room_id)
 
 
-@socketio.on("idle", namespace="/channel")
-def player_idle(data: Dict[str, Any]):
-    print("\n---\nevent: idle\n---\n [", data, "]")
+@socketio.on("leave", namespace="/channel")
+def player_leave(data: Dict[str, Any]):
+    print("\n---\nevent: leave\n---\n [", data, "]")
 
-    user = data["user"]
-    op = "old"
+    room_id: str = data["room"]
+    leave_room(room_id)
 
-    activity: Dict[str, Any] = {
-        "user": {**user, "status": Status.IDLE.value},
-        "sid": None,
-        "is": op,
-    }
-
-    emit("activity:channel", activity, broadcast=True, namespace="/channel")
-
-
-@socketio.on("online", namespace="/channel")
-def player_online(data: Dict[str, Any]):
-    print("\n---\nevent: idle\n---\n [", data, "]")
-
-    user = data["user"]
-    op = "old"
-
-    activity: Dict[str, Any] = {
-        "user": {**user, "status": Status.ONLINE.value},
-        "sid": None,
-        "is": op,
-    }
-
-    emit("activity:channel", activity, broadcast=True, namespace="/channel")
