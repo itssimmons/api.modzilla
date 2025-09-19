@@ -1,10 +1,6 @@
-insert into users
-    (username, avatar, color, status, role)
-values
-    (
-        'Assistant',
-        'https://ui-avatars.com/api/?background=CEA2FD&name=Assistant&length=1',
-        '#CEA2FD',
-        'online',
-        'staff'
-    )
+insert into roles (slug) values ('staff'), ('default');
+
+insert into user_roles (user_id, role_id)
+select u.id, r.id
+from users u, roles r
+where u.username = 'Assistant' and r.slug = 'staff';
