@@ -4,7 +4,7 @@ from flask import Blueprint, request
 from uuid import uuid4
 from datetime import datetime
 
-from orm.database import Builder, Relationship
+from builder import Builder, Relationship
 
 chats_bp = Blueprint("chats", __name__, url_prefix="/chats")
 

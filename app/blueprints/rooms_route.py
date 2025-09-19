@@ -1,6 +1,6 @@
 from flask.json import jsonify
 from flask import Blueprint
-from orm.database import Builder
+from builder import Builder
 
 rooms_bp = Blueprint("channels", __name__, url_prefix="/channels")
 

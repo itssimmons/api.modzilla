@@ -67,7 +67,7 @@ def run_sql_at(level: Literal["migrations", "seeders"]):
 
     pathlist = list(dir.glob("*.sql"))
     
-    from app.orm.database import Builder
+    from builder import Builder
 
     for file_path in pathlist:
         from time import time
@@ -77,7 +77,7 @@ def run_sql_at(level: Literal["migrations", "seeders"]):
         print(f"Running {label}: {file_path.name} ⏳")
 
         raw_sql = file_path.read_text()
-        Builder.raw_query(sql=raw_sql)
+        Builder.raw_query(script=raw_sql)
 
         end = time()
         print(

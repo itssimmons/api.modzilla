@@ -7,7 +7,7 @@ from uuid import uuid4
 
 from app import socketio
 from app.enums.Status import Status
-from orm.database import Builder
+from builder import Builder
 
 
 STAFF_ID = 1
@@ -162,7 +162,17 @@ def channel_player_action(data: Dict[str, Any]):
             namespace="/channel",
         )
     elif event == "channel:block":
-        pass
+        dest_sid: str  = payload["to"]["sid"]
+        del payload["to"]["sid"]
+        
+        emit(
+            event,
+            payload,
+            to=dest_sid,
+            broadcast=False,
+            include_self=False,
+            namespace="/channel",
+        )
     else:
         print("Unknown event:", event)
 

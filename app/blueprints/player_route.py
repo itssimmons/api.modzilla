@@ -5,7 +5,7 @@ from flask import Blueprint, request
 # from datetime import datetime
 from typing import Dict, Any
 
-from orm.database import Builder
+from builder import Builder
 
 players_bp = Blueprint("players", __name__, url_prefix="/players")
 
