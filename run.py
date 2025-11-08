@@ -1,7 +1,7 @@
 from app import app, socketio
 
 if __name__ == "__main__":
-    socketio.run(               # type: ignore
+    socketio.run(               # type: ignore[misc]
         app, 
         host="0.0.0.0",
         port=8000,

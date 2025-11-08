@@ -343,6 +343,7 @@ class Builder:
         self.__sql[0] = f"UPDATE {self.__t1} SET {s}"
         self.__run(v)
         self.close()
+        return self.count
 
     def delete(self):
         """Delete a row from the table - Unstable ⚠️"""
@@ -351,6 +352,7 @@ class Builder:
         self.__sql[0] = f"DELETE FROM {self.__t1}"
         self.__run()
         self.close()
+        return self.count
 
     @overload
     def relation(

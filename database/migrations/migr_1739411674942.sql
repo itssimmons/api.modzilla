@@ -1,9 +1,9 @@
 create table if not exists users (
     id integer primary key autoincrement,
-    username text not null,
-    email text not null unique,
+    username text null unique,
+    email text null unique,
     password_hash text not null,
-    name text not null,
+    nickname text null,
     avatar text null,
     color text not null,
     created_at text not null default current_timestamp,
@@ -23,10 +23,12 @@ create table if not exists tokens (
     id integer primary key autoincrement,
     user_id integer not null,
     token text not null unique,
+    refresh_token text not null unique,
     ip_address text null,
     user_agent text null,
+    revoked integer not null default 0,
     created_at text not null default current_timestamp,
-    expires_at text not null,
+    expires_at integer not null,
     
     foreign key (user_id) references users (id) on delete cascade
 );

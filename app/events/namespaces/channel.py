@@ -5,9 +5,9 @@ from datetime import datetime
 from typing import Dict, Any
 from uuid import uuid4
 
-from app import socketio
-from app.enums.Status import Status
-from builder import Builder
+from extensions import socketio
+from app.contants import Status
+from addons.builder import Builder
 
 
 STAFF_ID = 1
@@ -192,3 +192,11 @@ def player_leave(data: Dict[str, Any]):
     room_id: str = data["room"]
     leave_room(room_id)
 
+
+@socketio.on_error("/channel")
+def error_handler_channel(e: Any):
+    print("\n--- [BEGIN | error_handler_channel] ---")
+    print("Reason: ", str(e))
+    print(request.event["message"])  # "my error event" # type: ignore
+    print(request.event["args"])  # (data,) # type: ignore
+    print("--- [END | error_handler_channel] ---\n")

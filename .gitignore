@@ -1,28 +1,20 @@
 # Python / Virtual Environment / Pip
 .venv/
 __pycache__/
+
+# Builds
+build/
 *.egg-info/
-*.py[cod]
-*.pyo
-*.pyd
-*.db
 
 # Environment variables
 *.env
 !.env.example
-
+.flaskenv
 
 # Database
 *.sqlite3
-*.sqlite
 
 # MacOS
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+._*

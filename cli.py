@@ -67,7 +67,7 @@ def run_sql_at(level: Literal["migrations", "seeders"]):
 
     pathlist = list(dir.glob("*.sql"))
     
-    from builder import Builder
+    from addons.builder import Builder
 
     for file_path in pathlist:
         from time import time

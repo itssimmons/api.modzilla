@@ -1,6 +1,6 @@
-from flask.json import jsonify
-from flask import Blueprint
-from builder import Builder
+from flask import Blueprint, Response
+
+from addons.builder import Builder
 
 rooms_bp = Blueprint("channels", __name__, url_prefix="/channels")
 
@@ -17,8 +17,12 @@ def read_room(room_id: str):
     )
 
     if not rooms:
-        return jsonify({"message": "Room not found"}), 404
+        return Response({"exception": {
+            "message": "Room not found",
+            "code": "ROOM_NOT_FOUND",
+            "details": { "room_id": room_id }
+        }}, mimetype='application/json', status=404)
 
-    response = jsonify(rooms)
+    response = Response(rooms, mimetype='application/json', status=200)
     response.headers["Cache-Control"] = "public, max-age=3600"
-    return response, 200
+    return response
